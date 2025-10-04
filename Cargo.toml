@@ -1,0 +1,19 @@
+[package]
+name = "vital-reader"
+version = "1.0.0"
+edition = "2021"
+
+[dependencies]
+serialport = "4.3"
+clap = { version = "4.5", features = ["derive"] }
+chrono = "0.4"
+crossterm = "0.27"
+anyhow = "1.0"
+
+[lib]
+name = "vital_reader"
+path = "src/lib.rs"
+
+[[bin]]
+name = "vital-reader"
+path = "src/main.rs"
