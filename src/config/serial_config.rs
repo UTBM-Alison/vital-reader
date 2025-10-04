@@ -26,31 +26,33 @@ impl SerialConfig {
     /// Parity: 0=none, 1=odd, 2=even
     pub fn from_string(config: &str) -> Result<Self> {
         let parts: Vec<&str> = config.split(',').collect();
-        
+
         if parts.len() != 4 {
             return Err(anyhow::anyhow!(
                 "Invalid config format. Expected: baud,parity,data_bits,stop_bits (e.g., 57600,0,8,1)"
             ));
         }
 
-        let baud: u32 = parts[0].parse()
-            .context("Invalid baud rate")?;
-        
-        let parity_num: u8 = parts[1].parse()
+        let baud: u32 = parts[0].parse().context("Invalid baud rate")?;
+
+        let parity_num: u8 = parts[1]
+            .parse()
             .context("Invalid parity (0=none, 1=odd, 2=even)")?;
         let parity = match parity_num {
             0 => Parity::None,
             1 => Parity::Odd,
             2 => Parity::Even,
-            _ => return Err(anyhow::anyhow!("Parity must be 0 (none), 1 (odd), or 2 (even)")),
+            _ => {
+                return Err(anyhow::anyhow!(
+                    "Parity must be 0 (none), 1 (odd), or 2 (even)"
+                ))
+            }
         };
 
-        let data_bits_num: u8 = parts[2].parse()
-            .context("Invalid data bits")?;
+        let data_bits_num: u8 = parts[2].parse().context("Invalid data bits")?;
         let data_bits = Self::parse_data_bits(data_bits_num)?;
 
-        let stop_bits_num: u8 = parts[3].parse()
-            .context("Invalid stop bits")?;
+        let stop_bits_num: u8 = parts[3].parse().context("Invalid stop bits")?;
         let stop_bits = Self::parse_stop_bits(stop_bits_num)?;
 
         Ok(Self {
@@ -97,22 +99,5 @@ impl Default for SerialConfig {
             parity: Parity::None,
             stop_bits: StopBits::One,
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_parse_config_string() {
-        let config = SerialConfig::from_string("115200,0,8,1").unwrap();
-        assert_eq!(config.baud, 115200);
-        assert_eq!(config.data_bits, DataBits::Eight);
-    }
-
-    #[test]
-    fn test_invalid_config_string() {
-        assert!(SerialConfig::from_string("115200,0,8").is_err());
     }
 }

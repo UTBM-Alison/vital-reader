@@ -13,7 +13,7 @@ impl PortDetector {
 
     pub fn list_ports(&self) {
         let ports = Self::get_available_ports();
-        
+
         if ports.is_empty() {
             println!("  No serial ports detected.");
             println!("  Common ports to check:");
@@ -21,7 +21,7 @@ impl PortDetector {
         } else {
             for (idx, port) in ports.iter().enumerate() {
                 println!("  [{}] {}", idx + 1, port.port_name);
-                
+
                 match &port.port_type {
                     serialport::SerialPortType::UsbPort(info) => {
                         println!("      Type: USB");
@@ -53,12 +53,12 @@ impl PortDetector {
         {
             println!("    Windows: COM1, COM3, COM4");
         }
-        
+
         #[cfg(target_os = "linux")]
         {
             println!("    Linux: /dev/ttyUSB0, /dev/ttyUSB1, /dev/ttyACM0");
         }
-        
+
         #[cfg(target_os = "macos")]
         {
             println!("    macOS: /dev/cu.usbserial, /dev/cu.usbmodem");
@@ -67,13 +67,13 @@ impl PortDetector {
 
     pub fn suggest_port(&self) -> Option<String> {
         let ports = Self::get_available_ports();
-        
+
         for port in &ports {
             if let serialport::SerialPortType::UsbPort(_) = port.port_type {
                 return Some(port.port_name.clone());
             }
         }
-        
+
         ports.first().map(|p| p.port_name.clone())
     }
 

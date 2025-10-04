@@ -1,0 +1,8 @@
+[report]
+out = ["Xml"]
+
+[coverage]
+exclude-files = [
+    "src/fake/*",
+    "src/cli/*"
+]

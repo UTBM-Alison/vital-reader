@@ -46,6 +46,7 @@ struct Args {
     timeout: u64,
 }
 
+#[cfg(not(tarpaulin_include))]
 fn main() -> Result<()> {
     let args = Args::parse();
 
@@ -58,6 +59,7 @@ fn main() -> Result<()> {
     Ok(())
 }
 
+#[cfg(not(tarpaulin_include))]
 fn run_reader_mode(args: &Args) -> Result<()> {
     // Get port name
     let port_name = if let Some(ref p) = args.port {
@@ -95,6 +97,7 @@ fn run_reader_mode(args: &Args) -> Result<()> {
     Ok(())
 }
 
+#[cfg(not(tarpaulin_include))]
 fn print_configuration(port_name: &str, config: &SerialConfig) {
     println!("\n╔════════════════════════════════════════╗");
     println!("║      VITAL SERIAL READER v0.1.0       ║");

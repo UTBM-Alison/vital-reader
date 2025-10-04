@@ -17,3 +17,6 @@ path = "src/lib.rs"
 [[bin]]
 name = "vital-reader"
 path = "src/main.rs"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }

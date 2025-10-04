@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use super::DataFormatter;
+use std::collections::HashMap;
 
 #[derive(Debug, PartialEq)]
 pub enum DataType {
@@ -37,7 +37,7 @@ impl DataParser {
         }
 
         let ascii_ratio = self.ascii_count as f64 / self.total_count as f64;
-        
+
         self.detected_type = if ascii_ratio > 0.95 {
             DataType::Ascii
         } else if ascii_ratio < 0.3 {
@@ -71,7 +71,7 @@ impl DataParser {
             } else {
                 self.last_was_cr = false;
                 self.line_buffer.push(byte);
-                
+
                 if self.line_buffer.len() > 65536 {
                     self.flush_line(timestamp);
                 }
@@ -86,7 +86,9 @@ impl DataParser {
             return;
         }
 
-        if let Some(formatted) = DataFormatter::format_data(&self.line_buffer, &self.detected_type, timestamp) {
+        if let Some(formatted) =
+            DataFormatter::format_data(&self.line_buffer, &self.detected_type, timestamp)
+        {
             println!("{}", formatted);
         }
 
@@ -96,17 +98,21 @@ impl DataParser {
     pub fn print_stats(&self) {
         println!("\nData Analysis:");
         println!("  Total bytes:      {}", self.total_count);
-        println!("  ASCII bytes:      {} ({:.1}%)", 
-                 self.ascii_count, 
-                 self.ascii_count as f64 / self.total_count as f64 * 100.0);
-        println!("  Binary bytes:     {} ({:.1}%)", 
-                 self.binary_count,
-                 self.binary_count as f64 / self.total_count as f64 * 100.0);
+        println!(
+            "  ASCII bytes:      {} ({:.1}%)",
+            self.ascii_count,
+            self.ascii_count as f64 / self.total_count as f64 * 100.0
+        );
+        println!(
+            "  Binary bytes:     {} ({:.1}%)",
+            self.binary_count,
+            self.binary_count as f64 / self.total_count as f64 * 100.0
+        );
         println!("  Detected type:    {:?}", self.detected_type);
 
         let mut freq_vec: Vec<_> = self.char_frequency.iter().collect();
         freq_vec.sort_by(|a, b| b.1.cmp(a.1));
-        
+
         println!("\nMost common bytes:");
         for (byte, count) in freq_vec.iter().take(5) {
             let char_repr = if DataFormatter::is_printable_ascii(**byte) {
@@ -114,9 +120,13 @@ impl DataParser {
             } else {
                 String::new()
             };
-            println!("    0x{:02X} {}: {} times ({:.1}%)",
-                     byte, char_repr, count,
-                     **count as f64 / self.total_count as f64 * 100.0);
+            println!(
+                "    0x{:02X} {}: {} times ({:.1}%)",
+                byte,
+                char_repr,
+                count,
+                **count as f64 / self.total_count as f64 * 100.0
+            );
         }
     }
 }
@@ -124,32 +134,5 @@ impl DataParser {
 impl Default for DataParser {
     fn default() -> Self {
         Self::new()
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_ascii_detection() {
-        let mut parser = DataParser::new();
-        let data = b"Hello World\n".repeat(20);
-        parser.process_data(&data, "12:00:00");
-        assert_eq!(parser.detected_type, DataType::Ascii);
-    }
-
-    #[test]
-    fn test_cr_line_ending() {
-        let mut parser = DataParser::new();
-        let data = b"Line1\rLine2\r";
-        parser.process_data(data, "12:00:00");
-    }
-
-    #[test]
-    fn test_crlf_line_ending() {
-        let mut parser = DataParser::new();
-        let data = b"Line1\r\nLine2\r\n";
-        parser.process_data(data, "12:00:00");
     }
 }

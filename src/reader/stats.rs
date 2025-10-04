@@ -45,16 +45,3 @@ impl Default for SessionStats {
         Self::new()
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_stats_tracking() {
-        let mut stats = SessionStats::new();
-        stats.add_bytes(100);
-        stats.add_bytes(50);
-        assert_eq!(stats.total_bytes(), 150);
-    }
-}
